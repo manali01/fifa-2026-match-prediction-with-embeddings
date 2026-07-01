@@ -1,0 +1,30 @@
+# Python
+__pycache__/
+*.py[cod]
+*.egg-info/
+venv/
+.env
+
+# Data (too large for GitHub - use Kaggle links instead)
+data/raw/
+data/processed/*.npy
+data/processed/*.csv
+
+# Models (too large - use Git LFS or release attachments)
+outputs/models/*.pkl
+
+# App cache
+fifa-app/.wc_cache.json
+fifa-app/.streamlit/secrets.toml
+
+# Jupyter
+.ipynb_checkpoints/
+*.ipynb_checkpoints
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Secrets
+*.toml
+!fifa-app/.streamlit/secrets.toml.example
