@@ -56,9 +56,7 @@ with tab1:
             "Accuracy": "{:.1%}", "AUC (macro)": "{:.3f}",
             "F1 (macro)": "{:.3f}", "Home Win F1": "{:.0%}",
             "Draw F1": "{:.0%}", "Away Win F1": "{:.0%}",
-        }, na_rep="-").background_gradient(
-            subset=["Accuracy"], cmap="RdYlGn", vmin=0.4, vmax=0.9
-        ),
+        }, na_rep="-"),
         use_container_width=True, hide_index=True,
     )
 
