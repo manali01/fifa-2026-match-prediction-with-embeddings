@@ -1,30 +1,24 @@
-# Python
+﻿# Python
 __pycache__/
 *.py[cod]
 *.egg-info/
 venv/
 .env
 
-# Data (too large for GitHub - use Kaggle links instead)
-data/raw/
-data/processed/*.npy
-data/processed/*.csv
-
-# Models (too large - use Git LFS or release attachments)
-outputs/models/*.pkl
+# Large raw data files (too big for GitHub)
+data/raw/male_players.csv
+data/raw/male_players.csv.zip
+data/raw/male_teams.csv
+data/raw/male_teams.csv.zip
+data/raw/goalscorers.csv
 
 # App cache
 fifa-app/.wc_cache.json
 fifa-app/.streamlit/secrets.toml
 
-# Jupyter
+# Jupyter checkpoints
 .ipynb_checkpoints/
-*.ipynb_checkpoints
 
 # OS
 .DS_Store
 Thumbs.db
-
-# Secrets
-*.toml
-!fifa-app/.streamlit/secrets.toml.example
