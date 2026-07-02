@@ -35,7 +35,7 @@ try:
 
     if upsets:
         msgs = " | ".join(
-            f"{u['match']}: {u['result']} ({u['date']})"
+            f"{u['match']}: {u['result']}"
             for u in upsets
         )
         st.error(f"UPSETS: {msgs}")
