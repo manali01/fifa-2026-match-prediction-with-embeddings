@@ -352,3 +352,119 @@ if __name__ == "__main__":
     print(f"\nUpsets:")
     for u in data["upsets"]:
         print(f"  [{u['round']}] {u['match']}: {u['result']}")
+
+
+def compute_round_accuracy(data):
+    """
+    Compute model accuracy broken down by tournament round.
+    Returns dict with per-round stats.
+    """
+    rounds = {
+        "Group Stage": {"correct":0,"total":0,"results":[]},
+        "Round of 32": {"correct":0,"total":0,"results":[]},
+        "Round of 16": {"correct":0,"total":0,"results":[]},
+        "Quarterfinals":{"correct":0,"total":0,"results":[]},
+        "Semifinals":   {"correct":0,"total":0,"results":[]},
+        "Final":        {"correct":0,"total":0,"results":[]},
+    }
+
+    # Group stage — hardcoded from our OOT validation
+    group_results = [
+        ("Mexico","South Africa","Home Win","Home Win",True),
+        ("South Korea","Czechia","Home Win","Away Win",False),
+        ("Canada","Bosnia and Herzegovina","Draw","Draw",True),
+        ("Qatar","Switzerland","Draw","Draw",True),
+        ("Brazil","Morocco","Draw","Away Win",False),
+        ("Haiti","Scotland","Away Win","Away Win",True),
+        ("United States","Paraguay","Home Win","Home Win",True),
+        ("Australia","Turkey","Home Win","Away Win",False),
+        ("Ecuador","Germany","Away Win","Away Win",True),
+        ("Curacao","Ivory Coast","Away Win","Away Win",True),
+        ("Netherlands","Japan","Draw","Away Win",False),
+        ("Sweden","Tunisia","Home Win","Home Win",True),
+        ("Belgium","Egypt","Draw","Home Win",False),
+        ("Iran","New Zealand","Draw","Home Win",False),
+        ("Spain","Cape Verde","Draw","Home Win",False),
+        ("Saudi Arabia","Uruguay","Draw","Away Win",False),
+        ("Norway","France","Away Win","Away Win",True),
+        ("Senegal","Iraq","Home Win","Home Win",True),
+        ("Algeria","Austria","Home Win","Away Win",False),
+        ("Jordan","Argentina","Away Win","Away Win",True),
+        ("Colombia","Uzbekistan","Home Win","Home Win",True),
+        ("Portugal","DR Congo","Draw","Home Win",False),
+        ("Panama","England","Away Win","Away Win",True),
+        ("Croatia","Ghana","Away Win","Away Win",True),
+        ("France","Senegal","Home Win","Home Win",True),
+        ("Iraq","Norway","Away Win","Away Win",True),
+        ("Argentina","Algeria","Home Win","Home Win",True),
+        ("Austria","Jordan","Home Win","Home Win",True),
+        ("Uzbekistan","Colombia","Away Win","Away Win",True),
+        ("England","Croatia","Home Win","Home Win",True),
+        ("Ghana","Panama","Home Win","Home Win",True),
+    ]
+
+    for home,away,actual,predicted,correct in group_results:
+        rounds["Group Stage"]["total"]   += 1
+        rounds["Group Stage"]["correct"] += int(correct)
+        rounds["Group Stage"]["results"].append({
+            "home":home,"away":away,
+            "actual":actual,"predicted":predicted,"correct":correct
+        })
+
+    # R32 from live data
+    for (h,a),res in data.get("confirmed_r32_raw",{}).items():
+        correct = res.get("model_correct", False)
+        rounds["Round of 32"]["total"]   += 1
+        rounds["Round of 32"]["correct"] += int(correct) if correct else 0
+        rounds["Round of 32"]["results"].append({
+            "home":h,"away":a,
+            "winner":res["winner"],"method":res["method"],
+            "correct":correct
+        })
+
+    # R16 from live data
+    for (h,a),res in data.get("confirmed_r16_raw",{}).items():
+        correct = res.get("model_correct", False)
+        rounds["Round of 16"]["total"]   += 1
+        rounds["Round of 16"]["correct"] += int(correct) if correct else 0
+        rounds["Round of 16"]["results"].append({
+            "home":h,"away":a,
+            "winner":res["winner"],"method":res["method"],
+            "correct":correct
+        })
+
+    # QF from live data
+    for (h,a),res in data.get("confirmed_qf_raw",{}).items():
+        correct = res.get("model_correct", False)
+        rounds["Quarterfinals"]["total"]   += 1
+        rounds["Quarterfinals"]["correct"] += int(correct) if correct else 0
+        rounds["Quarterfinals"]["results"].append({
+            "home":h,"away":a,
+            "winner":res["winner"],"method":res["method"],
+            "correct":correct
+        })
+
+    # Compute accuracy per round
+    summary = {}
+    total_correct = 0
+    total_matches = 0
+    for round_name, stats in rounds.items():
+        t = stats["total"]
+        c = stats["correct"]
+        if t > 0:
+            summary[round_name] = {
+                "correct":  c,
+                "total":    t,
+                "accuracy": round(c/t*100, 1),
+                "results":  stats["results"]
+            }
+            total_correct += c
+            total_matches += t
+
+    summary["Overall"] = {
+        "correct":  total_correct,
+        "total":    total_matches,
+        "accuracy": round(total_correct/total_matches*100,1) if total_matches else 0,
+    }
+
+    return summary
